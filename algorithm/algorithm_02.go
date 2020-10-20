@@ -4,10 +4,46 @@ import "fmt"
 
 func main() {
 
+	fmt.Println("======= =======")
+
 	// 剑指 Offer 12. 矩阵中的路径
-	board := [][]byte{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}}
-	word := "ABCCED"
-	fmt.Println(exist(board, word))
+	//board := [][]byte{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}}
+	//word := "ABCCED"
+	//fmt.Println(exist(board, word))
+
+	// 剑指 Offer 13. 机器人的运动范围
+	count := movingCount(1, 2, 1)
+	fmt.Println(count)
+
+}
+
+func movingCount(m int, n int, k int) int {
+	visited := make([][]bool, m)
+	for i := 0; i < m; i++ {
+		vis := make([]bool, n)
+		for j := 0; j < n; j++ {
+			vis = append(vis, false)
+		}
+		visited[i] = vis
+	}
+	return dfs(0, 0, m, n, k, visited)
+}
+
+func dfs(i int, j int, m int, n int, k int, visited [][]bool) int {
+	if i < 0 || i >= m || j < 0 || j >= n || sumNum(i)+sumNum(j) > k || visited[i][j] {
+		return 0
+	}
+	visited[i][j] = true
+	return 1 + dfs(i+1, j, m, n, k, visited) + dfs(i, j+1, m, n, k, visited)
+}
+
+func sumNum(n int) int {
+	res := 0
+	for n != 0 {
+		res += n % 10
+		n = n / 10
+	}
+	return res
 }
 
 /*
