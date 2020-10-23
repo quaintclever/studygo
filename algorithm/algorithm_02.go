@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 func main() {
 
@@ -12,11 +15,59 @@ func main() {
 	//fmt.Println(exist(board, word))
 
 	// 剑指 Offer 13. 机器人的运动范围
-	count := movingCount(1, 2, 1)
-	fmt.Println(count)
+	//count := movingCount(1, 2, 1)
+	//fmt.Println(count)
+
+	// 剑指 Offer 14- I. 剪绳子
+	fmt.Println(cuttingRope(10))
+	// 剑指 Offer 14- II. 剪绳子 II
+	fmt.Println(cuttingRope2(10))
 
 }
 
+// 剑指 Offer 14- II. 剪绳子 II
+func cuttingRope2(n int) int {
+	if n <= 3 {
+		return n - 1
+	}
+	a, b := n/3, n%3
+	if b == 0 {
+		return myPow(3, a)
+	}
+	if b == 1 {
+		return myPow(3, a-1) * 4 % 1000000007
+	}
+	return myPow(3, a) * 2 % 1000000007
+}
+
+// % 1000000007
+func myPow(a, b int) int {
+	var ans = 1
+	if b == 0 {
+		return ans
+	}
+	for i := 0; i < b; i++ {
+		ans = ans * a % 1000000007
+	}
+	return ans
+}
+
+// 剑指 Offer 14- I. 剪绳子
+func cuttingRope(n int) int {
+	if n <= 3 {
+		return n - 1
+	}
+	a, b := n/3, n%3
+	if b == 0 {
+		return int(math.Pow(3, float64(a)))
+	}
+	if b == 1 {
+		return int(math.Pow(3, float64(a-1)) * 4)
+	}
+	return int(math.Pow(3, float64(a)) * 2)
+}
+
+// 剑指 Offer 13. 机器人的运动范围
 func movingCount(m int, n int, k int) int {
 	visited := make([][]bool, m)
 	for i := 0; i < m; i++ {
