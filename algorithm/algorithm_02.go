@@ -19,10 +19,53 @@ func main() {
 	//fmt.Println(count)
 
 	// 剑指 Offer 14- I. 剪绳子
-	fmt.Println(cuttingRope(10))
+	//fmt.Println(cuttingRope(10))
 	// 剑指 Offer 14- II. 剪绳子 II
-	fmt.Println(cuttingRope2(10))
+	//fmt.Println(cuttingRope2(10))
 
+	// 寻找两个正序数组的中位数
+	// [0,0,0,0,0]
+	//[-1,0,0,0,0,0,1]
+	var nums1 = []int{1, 2}
+	var nums2 = []int{1, 2}
+	fmt.Println(findMedianSortedArrays(nums1, nums2))
+
+}
+
+// 寻找两个正序数组的中位数
+func findMedianSortedArrays(nums1 []int, nums2 []int) float64 {
+	var p1 = len(nums1)
+	var p2 = len(nums2)
+
+	if p1+p2 == 0 {
+		return 0
+	}
+
+	var mid = (p1 + p2 - 1) / 2
+	var flag = (p1 + p2 - 1) % 2
+
+	var ans = 0.0
+	for i := 0; i <= mid; i++ {
+		if p1 == 0 || (p2 > 0 && nums1[p1-1] <= nums2[p2-1]) {
+			ans = float64(nums2[p2-1])
+			p2--
+			continue
+		}
+		if p2 == 0 || (p1 > 0 && nums1[p1-1] >= nums2[p2-1]) {
+			ans = float64(nums1[p1-1])
+			p1--
+			continue
+		}
+	}
+
+	if flag != 0 {
+		if p1 == 0 || (p2 > 0 && nums1[p1-1] <= nums2[p2-1]) {
+			ans = (float64(nums2[p2-1]) + ans) / 2
+		} else if p2 == 0 || (p1 > 0 && nums1[p1-1] >= nums2[p2-1]) {
+			ans = (float64(nums1[p1-1]) + ans) / 2
+		}
+	}
+	return ans
 }
 
 // 剑指 Offer 14- II. 剪绳子 II
