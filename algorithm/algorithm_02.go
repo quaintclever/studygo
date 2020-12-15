@@ -26,10 +26,194 @@ func main() {
 	// 寻找两个正序数组的中位数
 	// [0,0,0,0,0]
 	//[-1,0,0,0,0,0,1]
-	var nums1 = []int{1, 2}
-	var nums2 = []int{1, 2}
-	fmt.Println(findMedianSortedArrays(nums1, nums2))
+	//var nums1 = []int{1, 2}
+	//var nums2 = []int{1, 2}
+	//fmt.Println(findMedianSortedArrays(nums1, nums2))
 
+	// 842. 将数组拆分成斐波那契序列
+	//s:= "123456579"
+	//fmt.Printf("结果: %v",splitIntoFibonacci(s))
+
+	// 649. Dota2 参议院
+	//fmt.Println(predictPartyVictory("DDRRR"))
+
+	// 738. 单调递增的数字
+	fmt.Println(monotoneIncreasingDigits(113056))
+
+}
+
+// 738. 单调递增的数字
+func monotoneIncreasingDigits(N int) int {
+	ans := 0
+	for true {
+		num := getOnceNum(N)
+		if ans == num {
+			break
+		}
+		ans = num
+		N = ans
+	}
+	return ans
+}
+
+func getOnceNum(N int) int {
+	var arr []int
+	for N != 0 {
+		arr = append(arr, N%10)
+		N /= 10
+	}
+	// 123456 => 654321
+	ans := 0
+	for i := len(arr) - 1; i >= 0; i-- {
+		// 654321
+		if i == 0 {
+			ans += arr[i]
+			return ans
+		}
+		if arr[i] <= arr[i-1] {
+			ans += arr[i] * int(math.Pow(10, float64(i)))
+			continue
+		} else {
+			ans += arr[i]*int(math.Pow(10, float64(i))) - 1
+			return ans
+		}
+	}
+	return ans
+}
+
+// 649. Dota2 参议院
+func predictPartyVictory(senate string) string {
+	// 优先干掉 排在自己后面以为 的 敌方
+	// 如果后面 没有敌方， 优先干掉排在最前面的 敌方
+	//（把前面存活的追加到后面，认为前面的全部被禁掉） 遍历到最后就知道结果了
+	// 被禁掉的数量
+	r, d := 0, 0
+	length := len(senate)
+	limitLen := length
+	for i := 0; i < limitLen*2 && i < length; i++ {
+		if senate[i] == 'R' {
+			if r > 0 {
+				// 本方死亡。
+				r--
+			} else {
+				// 对方被 禁 一个， 本方存活， 排到最后
+				d++
+				senate = senate + "R"
+				if i == length-1 {
+					break
+				}
+				length++
+			}
+		} else if senate[i] == 'D' {
+			if d > 0 {
+				d--
+			} else {
+				r++
+				senate = senate + "D"
+				if i == length-1 {
+					break
+				}
+				length++
+			}
+		}
+	}
+	if r > d {
+		return "Dire"
+	} else {
+		return "Radiant"
+	}
+}
+
+// 842. 将数组拆分成斐波那契序列
+func splitIntoFibonacci2(S string) (arr []int) {
+	n := len(S)
+	var backtrack func(idx int, sum int, prev int) bool
+	backtrack = func(idx int, sum int, prev int) bool {
+		// 如果遍历到最后一个， 结束递归
+		if n == idx {
+			// 返回数组， 和是否能够成 斐波那契
+			return len(arr) >= 3
+		}
+		var curr = 0
+		for i := idx; i < n; i++ {
+			if i > idx && S[idx] == '0' {
+				break
+			}
+			curr = curr*10 + (int)(S[i]-'0')
+			if curr > math.MaxInt32 {
+				break
+			}
+			if len(arr) >= 2 {
+				if sum > curr {
+					continue
+				}
+				if sum < curr {
+					break
+				}
+			}
+			arr = append(arr, curr)
+			// 如果 遍历可以 组成
+			if backtrack(i+1, curr+prev, curr) {
+				return true
+			}
+			fmt.Printf("==>> %v \n", arr)
+			arr = arr[:len(arr)-1]
+			fmt.Printf("<<== %v \n", arr)
+		}
+		return false
+	}
+	backtrack(0, 0, 0)
+	return arr
+}
+
+// 842. 将数组拆分成斐波那契序列
+func splitIntoFibonacci(S string) (arr []int) {
+	arr, _ = backtrack(arr, S, len(S), 0, 0, 0, 0)
+	return
+}
+
+/**
+ * idx, 当前位置
+ * sum, 前两个数的和
+ * prev, 前一个数字
+ */
+func backtrack(arr []int, s string, length int, idx int, sum int, prev int, level int) ([]int, bool) {
+	// 如果遍历到最后一个， 结束递归
+	if length == idx {
+		// 返回数组， 和是否能够成 斐波那契
+		return arr, len(arr) >= 3
+	}
+	var curr = 0
+	for i := idx; i < length; i++ {
+		if i > idx && s[idx] == '0' {
+			break
+		}
+		curr = curr*10 + (int)(s[i]-'0')
+		if curr > math.MaxInt32 {
+			break
+		}
+		if len(arr) >= 2 {
+			if sum > curr {
+				continue
+			}
+			if sum < curr {
+				break
+			}
+		}
+		fmt.Printf("==> level:%d, add之前地址: %p, 内容: %v \n", level, arr, arr)
+		arr = append(arr, curr)
+		fmt.Printf("<== level:%d, add之后地址: %p, 内容: %v \n\n", level, arr, arr)
+		// 如果 遍历可以 组成
+		arr, result := backtrack(arr, s, length, i+1, curr+prev, curr, level+1)
+		fmt.Printf("<== level:%d, cal返回地址: %p, 内容: %v \n\n", level, arr, arr)
+		if result {
+			return arr, result
+		}
+		fmt.Printf("==> level:%d, del之前地址: %p, 内容: %v \n", level, arr, arr)
+		arr = arr[:len(arr)-1]
+		fmt.Printf("<== level:%d, del之后地址: %p, 内容: %v \n\n", level, arr, arr)
+	}
+	return arr, false
 }
 
 // 寻找两个正序数组的中位数
